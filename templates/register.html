@@ -1,0 +1,39 @@
+{% extends "base_login.html" %}
+
+{% block title %}旅游数据分析系统 - 注册{% endblock %}
+
+{% block login_form %}
+<h1 class="login-title">用户注册</h1>
+
+
+<form method="post" action="{% url 'register' %}">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="username">用户名</label>
+        <input type="text" class="form-control" id="username" name="username" placeholder="请设置用户名" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="email">电子邮箱</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="请输入电子邮箱" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="password">密码</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="请设置密码" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="confirm_password">确认密码</label>
+        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="请再次输入密码" required>
+    </div>
+    <div class="error-message">
+      {{ error_message }}
+    </div>
+    <button type="submit" class="btn-login">注册</button>
+</form>
+
+<div class="register-link">
+    已有账号？<a href="{% url 'login' %}">返回登录</a>
+</div>
+{% endblock %} 

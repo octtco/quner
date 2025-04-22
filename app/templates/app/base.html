@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}旅游数据分析系统{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/static/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/static/plugins/font-awesome/css/font-awesome.min.css">
+    <!-- 自定义CSS -->
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="wrapper">
+        <!-- 侧边栏 -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>旅游数据分析</h3>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li class="active">
+                    <a href="{% url 'dashboard' %}">
+                        <i class="fa fa-home"></i> 首页
+                    </a>
+                </li>
+                <li>
+                    <a href="#dataSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fa fa-chart-bar"></i> 数据分析
+                    </a>
+                    <ul class="collapse list-unstyled" id="dataSubmenu">
+                        <li>
+                            <a href="#"><i class="fa fa-map-marker"></i> 景区分布</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-star"></i> 评分分析</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-comment"></i> 评论分析</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="{%url 'comments' %}">
+                        <i class="fa fa-search"></i> 景区评论
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fa fa-compass"></i> 旅游推荐
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fa fa-user"></i> 个人中心
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 页面内容 -->
+        <div id="content">
+            <!-- 顶部导航 -->
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+{#                        <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">#}
+{#                            <i class="fa fa-bars"></i>#}
+{#                        </button>#}
+                        <a class="navbar-brand" href="#">旅游数据分析系统</a>
+                    </div>
+                    <div class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <img src="{{ request.user.avatar.url }}" alt="头像" class="user-avatar"> 
+                                    {{ request.user.username }} <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#"><i class="fa fa-user"></i> 个人资料</a></li>
+                                    <li><a href="#"><i class="fa fa-cog"></i> 设置</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="{% url 'login' %}"><i class="fa fa-sign-out"></i> 退出</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- 主要内容 -->
+            <div class="container-fluid">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="/static/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="/static/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <!-- 自定义JS -->
+    <script>
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                {#$('#sidebar').toggleClass('active');#}
+                $(this).toggleClass('active');
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

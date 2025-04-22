@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}旅游数据分析系统 - 登录{% endblock %}</title>
+  <!-- Bootstrap v3 CSS -->
+  <link href="/static/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- 自定义样式 -->
+  <link href="/static/css/login.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="login-container">
+    <!-- 左侧图片 -->
+    <div class="login-image"></div>
+    
+    <!-- 右侧登录表单 -->
+    <div class="login-form-container">
+      <div class="login-form">
+        {% block login_form %}
+        <h1 class="login-title">旅游数据分析系统</h1>
+
+        <form method="post" action="{% url 'login' %}">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" required>
+          </div>
+          <div class="error-message">
+            {{ error_message }}
+          </div>
+          <button type="submit" class="btn-login">登录</button>
+        </form>
+        
+        <div class="register-link">
+          还没有账号？<a href="{% url 'register' %}">立即注册</a>
+        </div>
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="/static/plugins/jquery/jquery.min.js"></script>
+  <script src="/static/plugins/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>

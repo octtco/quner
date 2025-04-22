@@ -1,0 +1,350 @@
+{% extends 'app/base.html' %}
+
+{% block title %}旅游数据分析系统 - 首页{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/dashboard-page.css">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="page-header">数据概览</h1>
+    </div>
+</div>
+
+<!-- 统计卡片 -->
+<div class="row">
+    <!-- 5A级景点数量 -->
+    <div class="col-md-3">
+        <div class="dashboard-stat blue">
+            <div class="visual">
+                <i class="fa fa-trophy"></i>
+            </div>
+            <div class="details">
+                <div class="number">
+                    <span>{{ count_5a }}</span>
+                </div>
+                <div class="desc">5A级景区数量</div>
+            </div>
+{#            <a class="more" href="#">#}
+{#                查看详情 <i class="fa fa-arrow-right"></i>#}
+{#            </a>#}
+        </div>
+    </div>
+    
+    <!-- 评论最多的景区 -->
+    <div class="col-md-3">
+        <div class="dashboard-stat green">
+            <div class="visual">
+                <i class="fa fa-comments"></i>
+            </div>
+            <div class="details">
+                <div class="number">
+                    <span>{{ most_comments_spot.title }}</span>
+                </div>
+                <div class="desc">评论最多景区</div>
+            </div>
+            <a class="more" href="{{ most_comments_spot.detailUrl }}">
+                查看详情 <i class="fa fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+    
+    <!-- 景点最多的省份 -->
+    <div class="col-md-3">
+        <div class="dashboard-stat purple">
+            <div class="visual">
+                <i class="fa fa-map-marker"></i>
+            </div>
+            <div class="details">
+                <div class="number">
+                    <span>{{ most_spots_province.province }}</span>
+                </div>
+                <div class="desc">景点最多省份</div>
+            </div>
+{#            <a class="more" href="#">#}
+{#                查看详情 <i class="fa fa-arrow-right"></i>#}
+{#            </a>#}
+        </div>
+    </div>
+    
+    <!-- 总景点数量 -->
+    <div class="col-md-3">
+        <div class="dashboard-stat red">
+            <div class="visual">
+                <i class="fa fa-globe"></i>
+            </div>
+            <div class="details">
+                <div class="number">
+                    <span>{{ total_spots }}</span>
+                </div>
+                <div class="desc">总景点数量</div>
+            </div>
+{#            <a class="more" href="#">#}
+{#                查看详情 <i class="fa fa-arrow-right"></i>#}
+{#            </a>#}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 评分排名前十图表 -->
+    <div class="col-md-6">
+        <div class="portlet">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-star"></i>
+                    <span>评分排名前十景区</span>
+                </div>
+{#                <div class="actions">#}
+{#                    <a href="#" class="btn btn-sm btn-default">更多</a>#}
+{#                </div>#}
+            </div>
+            <div class="portlet-body">
+                <div id="top-rated-chart" style="height: 450px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 热门景区地图 -->
+    <div class="col-md-6">
+        <div class="portlet">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-map"></i>
+                    <span>热门景区地图分布</span>
+                </div>
+{#                <div class="actions">#}
+{#                    <a href="#" class="btn btn-sm btn-default">全屏查看</a>#}
+{#                </div>#}
+            </div>
+            <div class="portlet-body">
+                <div id="china-map" style="width:100%;height:450px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 评论数量最多的景区 -->
+    <div class="col-md-12">
+        <div class="portlet">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-comment"></i>
+                    <span>评论数量最多的景区</span>
+                </div>
+{#                <div class="actions">#}
+{#                    <a href="#" class="btn btn-sm btn-default">查看全部</a>#}
+{#                </div>#}
+            </div>
+            <div class="portlet-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>排名</th>
+                                <th>景区名称</th>
+                                <th>所在省份</th>
+                                <th>评论数量</th>
+                                <th>评分</th>
+                                <th>景区等级</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for spot in top_comments_spots %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ spot.title }}</td>
+                                <td>{{ spot.province }}</td>
+                                <td>{{ spot.commentsLen }}</td>
+                                <td>{{ spot.score }}</td>
+                                <td>{{ spot.level }}</td>
+                                <td>
+                                    <a href="{{ spot.detailUrl }}" class="btn btn-xs btn-info">详情</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <!-- ECharts图表库 -->
+    <script src="/static/plugins/echarts/echarts.min.js"></script>
+    <script src="/static/plugins/echarts/china.js"></script>
+    <script>
+        // 评分排名前十图表
+        var topRatedChart = echarts.init(document.getElementById('top-rated-chart'));
+        var topRatedOption = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                max: 5,
+                axisLabel: {
+                    formatter: '{value}分'
+                }
+            },
+            yAxis: {
+                type: 'category',
+                data: [
+                    {% for spot in top_rated_spots %}
+                        '{{ spot.title }}',
+                    {% endfor %}
+                ]
+            },
+            series: [
+                {
+                    name: '评分',
+                    type: 'bar',
+                    data: [
+                        {% for spot in top_rated_spots %}
+                            {{ spot.score }},
+                        {% endfor %}
+                    ],
+                    itemStyle: {
+                        color: function (params) {
+                            var colorList = ['#FE8463', '#9BCA63', '#FAD860', '#60C0DD', '#0084C6', '#D7504B', '#C6E579', '#26C0C0', '#F0805A', '#B5C334'];
+                            return colorList[params.dataIndex % colorList.length];
+                        }
+                    }
+                }
+            ]
+        };
+        topRatedChart.setOption(topRatedOption);
+    </script>
+    <script>
+        var myChart = echarts.init(document.getElementById('china-map'));
+        var mydata = {{ geoData | safe }}
+        var options = {
+            tooltip: {
+                triggerOn: "mousemove",
+                padding: 8,
+                borderWidth: 1,
+                borderColor: '#409eff',
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                textStyle: {
+                    color: '#000',
+                    fontSize: 12
+                },
+                formatter: function (e, t, n) {
+                    let data = e.data;
+                    return data ? '城市：' + data.name + '\t景点数：' + data.value : '暂未拥有数据'
+                }
+            },
+            visualMap: {
+                show: true,
+                left: 26,
+                bottom: 40,
+                showLabel: true,
+                pieces: [
+                    {
+                        gte: 300,
+                        label: ">= 300",
+                        color: "#ff7979"
+                    },
+                    {
+                        gte: 150,
+                        lt: 300,
+                        label: "150 - 300",
+                        color: "#badc58"
+                    },
+                    {
+                        gte: 100,
+                        lt: 150,
+                        label: "100 - 150",
+                        color: "#ffbe76"
+                    },
+                    {
+                        gte: 50,
+                        lt: 100,
+                        label: "50 - 100",
+                        color: "#f6e58d"
+                    },
+                    {
+                        gte: 10,
+                        lt: 50,
+                        label: "10 - 50",
+                        color: "#7ed6df"
+                    },
+                    {
+                        lt: 10,
+                        label: '<10',
+                        color: "orange"
+                    }
+                ]
+            },
+            geo: {
+                map: "china",
+                roam: true,
+                scaleLimit: {
+                    min: 1,
+                    max: 2
+                },
+                zoom: 1,
+                top: 10,
+                layoutSize: "100%", //保持地图宽高比
+                label: {
+                    normal: {
+                        show: true,
+                        fontSize: "14",
+                        color: "#fff"
+                    },
+                    emphasis: {
+                        show: false,
+                        textStyle: {
+                            color: "#F3F3F3"
+                        }
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        borderColor: "rgba(0, 0, 0, 0.4)",
+                        areaColor: '#008c8c',
+                    },
+                    emphasis: {
+                        areaColor: "orange",
+                        shadowOffsetX: 0,
+                        shadowOffsetY: 0,
+                        borderWidth: 0
+                    }
+                }
+            },
+            series: [
+                {
+                    name: "成果预览",
+                    type: "map",
+                    geoIndex: 0,
+                    data: mydata
+                }
+            ]
+        }
+        myChart.setOption(options);
+    </script>
+    <script>
+
+        // 响应窗口调整大小
+        window.addEventListener('resize', function () {
+            topRatedChart.resize();
+            myChart.resize();
+        });
+    </script>
+{% endblock %} 

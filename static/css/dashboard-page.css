@@ -1,0 +1,190 @@
+/* 页面标题 */
+.page-header {
+    font-size: 24px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    color: #333;
+}
+
+/* 数据统计卡片 */
+.dashboard-stat {
+    display: block;
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 4px;
+    position: relative;
+    color: #fff;
+    overflow: hidden;
+    height: 120px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-stat .visual {
+    width: 80px;
+    height: 80px;
+    display: block;
+    float: left;
+    padding-top: 10px;
+    padding-left: 15px;
+    margin-bottom: 15px;
+    font-size: 60px;
+    line-height: 65px;
+    opacity: 0.8;
+}
+
+.dashboard-stat .details {
+    position: absolute;
+    right: 15px;
+    padding-right: 15px;
+    color: #fff;
+    text-align: right;
+}
+
+.dashboard-stat .details .number {
+    padding-top: 10px;
+    font-size: 24px;
+    line-height: 36px;
+    font-weight: 600;
+    letter-spacing: -1px;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px;
+}
+
+.dashboard-stat .details .desc {
+    text-align: right;
+    font-size: 14px;
+    letter-spacing: 0;
+    font-weight: 400;
+}
+
+.dashboard-stat .more {
+    clear: both;
+    display: block;
+    padding: 6px 10px;
+    position: absolute;
+    text-transform: uppercase;
+    font-weight: 300;
+    font-size: 12px;
+    opacity: 0.7;
+    color: #fff;
+    bottom: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-stat .more:hover {
+    text-decoration: none;
+    opacity: 0.9;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-stat.blue {
+    background-color: #3598dc;
+}
+
+.dashboard-stat.green {
+    background-color: #26C281;
+}
+
+.dashboard-stat.purple {
+    background-color: #8E44AD;
+}
+
+.dashboard-stat.red {
+    background-color: #E7505A;
+}
+
+/* 面板样式 */
+.portlet {
+    margin-bottom: 25px;
+    border-radius: 4px;
+    background-color: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.portlet-title {
+    padding: 12px 20px 10px;
+    border-bottom: 1px solid #eef1f5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.portlet-title .caption {
+    float: left;
+    display: inline-block;
+    font-size: 16px;
+    line-height: 18px;
+    font-weight: 500;
+    color: #333;
+}
+
+.portlet-title .caption i {
+    margin-right: 5px;
+    color: #777;
+}
+
+.portlet-title .actions {
+    float: right;
+    display: inline-block;
+    padding: 0;
+}
+
+.portlet-body {
+    padding: 15px;
+    border-radius: 0 0 4px 4px;
+}
+
+/* 表格样式 */
+.table {
+    margin-bottom: 0;
+}
+
+.table > thead > tr > th {
+    font-weight: 600;
+    color: #333;
+    background-color: #f9f9f9;
+    border-bottom: 2px solid #ddd;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #fafafa;
+}
+
+.table-hover > tbody > tr:hover {
+    background-color: #f5f5f5;
+}
+
+.btn-xs {
+    padding: 1px 5px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .dashboard-stat {
+        height: auto;
+        min-height: 120px;
+    }
+    
+    .dashboard-stat .details {
+        position: relative;
+        right: auto;
+        padding-right: 0;
+        margin-top: 10px;
+        text-align: left;
+        clear: both;
+    }
+    
+    .dashboard-stat .details .number,
+    .dashboard-stat .details .desc {
+        text-align: left;
+    }
+} 
