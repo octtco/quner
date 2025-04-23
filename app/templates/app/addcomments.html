@@ -47,12 +47,16 @@
                 <div class="card-body py-3">
                     <div class="comment-layout">
                         <!-- Avatar -->
-                        <img src="{{ comment.user_avatar|default:'/static/img/default-avatar.svg' }}" alt="用户头像" class="comment-avatar">
+                        <div class="user-info-block">
+                            <img src="{{ comment.user_avatar|default:'/static/img/default-avatar.svg' }}" alt="用户头像"
+                                 class="comment-avatar">
+
+                            <h6 class="mb-0">{{ comment.username }}</h6>
+                        </div>
                         <!-- User Info + Content Block -->
                         <div class="comment-content-block">
                             <!-- Username and Date -->
                             <div class="comment-header">
-                                <h6 class="mb-0">{{ comment.username }}</h6>
                                 <small class="text-muted">{{ comment.date|date:"Y-m-d H:i" }}</small>
                             </div>
                             <!-- Content -->
@@ -88,11 +92,31 @@
     </div>
 </div>
 <style>
-    .comment-input {
-        margin-bottom: 20px; /* 调整输入框与按钮的垂直间距 */
-    }
-    .comment-button {
-        margin-left: 10px;   /* 调整按钮与输入框的水平间距 */
-    }
+    /* 外层垂直排列 */
+.comment-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* 头像与用户名横向排列 */
+.user-info-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.comment-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* 内容区块样式 */
+.comment-content-block {
+    margin-top: 8px;
+    padding-left: 50px; /* 与头像对齐 */
+}
 </style>
 {% endblock %}
