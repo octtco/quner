@@ -16,107 +16,128 @@
         </div>
     </div>
     <div class="container mt-4">
-    <!-- 景点展示区 -->
-    <div class="row">
-        <!-- 左侧图片 -->
-        <div class="col-md-6">
-            <img src="{{ travelInfo.cover }}"
-                 alt="{{ travelInfo.title }}"
-                 class="img-fluid rounded shadow-lg">
-        </div>
-
-        <!-- 右侧信息 -->
-        <div class="col-md-6">
-            <h2>{{ travelInfo.title }}</h2>
-            <p class="lead">{{ travelInfo.shortIntro }}</p>
-            <div class="d-flex align-items-center mt-3">
-{#                <i class="fa fa-eye fa-lg text-primary me-2"></i>#}
-{#                <span>浏览量：1234</span>#}
+        <!-- 景点展示区 -->
+        <div class="row">
+            <!-- 左侧图片 -->
+            <div class="col-md-6">
+                <img src="{{ travelInfo.cover }}"
+                     alt="{{ travelInfo.title }}"
+                     class="img-fluid rounded shadow-lg">
             </div>
-        </div>
-    </div>
 
-    <!-- 评论区 -->
-    <div class="mt-5 border-top pt-4">
-        <h3>用户评论 ({{ comments.count }})</h3>
+            <!-- 右侧信息 -->
+            <div class="col-md-6">
+                <h2>{{ travelInfo.title }}</h2>
+                <p class="lead">{{ travelInfo.shortIntro }}</p>
+                <div class="d-flex align-items-center mt-3">
+                    {#                <i class="fa fa-eye fa-lg text-primary me-2"></i>#}
+                    {#                <span>浏览量：1234</span>#}
 
-        <!-- 评论列表 -->
-        <div class="mb-4">
-            {% for comment in newcomments|slice:":5" %}
-            <div class="card mb-2 border-0">
-                <div class="card-body py-3">
-                    <div class="comment-layout">
-                        <!-- Avatar -->
-                        <div class="user-info-block">
-                            <img src="{{ comment.user_avatar|default:'/static/img/default-avatar.svg' }}" alt="用户头像"
-                                 class="comment-avatar">
-
-                            <h6 class="mb-0">{{ comment.username }}</h6>
-                        </div>
-                        <!-- User Info + Content Block -->
-                        <div class="comment-content-block">
-                            <!-- Username and Date -->
-                            <div class="comment-header">
-                                <small class="text-muted">{{ comment.date|date:"Y-m-d H:i" }}</small>
-                            </div>
-                            <!-- Content -->
-                            <p class="comment-text">{{ comment.content }}</p>
-                        </div>
-                    </div>
                 </div>
-                <hr class="my-0" style="border-top: 2px solid #eee;">
             </div>
-            {% empty %}
-            <p class="text-muted">暂无评论，成为第一个评论的人吧！</p>
-            {% endfor %}
         </div>
 
-        <!-- 评论表单 -->
-        <div class="card">
-            <div class="card-body">
-                <h5 class="mb-4">发表评论</h5>
-                <form method="post" class="d-flex flex-column gap-3">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <input type="text" name="content" placeholder="请输入对该景点评论的内容"
-                               class="form-control form-control-lg">
+        <!-- 评论区 -->
+        <div class="mt-5 border-top pt-4">
+            <h3>用户评论 {{ comments.count }}</h3>
+
+            <!-- 评论列表 -->
+            <div class="mb-4">
+                {% for comment in newcomments|slice:":5" %}
+                    <div class="card mb-2 border-0">
+                        <div class="card-body py-3">
+                            <div class="comment-layout">
+                                <!-- Avatar -->
+                                <img src="/media/{{ comment.user.avatar|default:'/static/img/default-avatar.svg' }}"
+                                     alt="用户头像" class="comment-avatar">
+                                <!-- Username -->
+                                <h6 class="mb-0">{{ comment.user.username }}</h6>
+                                <!-- User Info + Content Block -->
+                                <div class="comment-content-block">
+                                    <!-- Content -->
+                                    <p class="comment-text">{{ comment.content }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-0" style="border-top: 2px solid #eee;">
                     </div>
-                    <div>
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fa fa-paper-plane me-2"></i> 提交评论
-                        </button>
-                    </div>
-                </form>
+                {% empty %}
+                    <p class="text-muted">暂无评论，成为第一个评论的人吧！</p>
+                {% endfor %}
+            </div>
+
+            <!-- 评论表单 -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="mb-4">发表评论</h5>
+                    <form method="post" class="d-flex flex-column gap-3">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input type="text" name="content" placeholder="请输入对该景点评论的内容"
+                                   class="form-control form-control-lg">
+                        </div>
+                        <style>
+                            .start-container {
+                                font-size: 0;
+                            }
+
+                            .start {
+                                font-size: 24px;
+                                cursor: pointer;
+                                color: gray;
+                                display: inline-block;
+                                transition: color 0.3s;
+                            }
+
+                            .start.checked {
+                                color: orange
+                            }
+
+                        </style>
+                        <script>
+                            let currentRating = 0
+
+                            function rateStart(rating) {
+                                currentRating = rating
+                                document.getElementById('rate').value = rating
+                                const starts = document.querySelectorAll(".start")
+                                starts.forEach((item, index) => {
+                                    if (index < rating) {
+                                        item.classList.add('checked')
+                                    } else {
+                                        item.classList.remove('checked')
+                                    }
+                                })
+                            }
+                        </script>
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">评分选择</label>
+                            <div class="col-sm-10 start-container">
+                                <div class="start" onclick="rateStart(1)">★</div>
+                                <div class="start" onclick="rateStart(2)">★</div>
+                                <div class="start" onclick="rateStart(3)">★</div>
+                                <div class="start" onclick="rateStart(4)">★</div>
+                                <div class="start" onclick="rateStart(5)">★</div>
+                                <input type="text" name="rate" id="rate" style="display:none;">
+                            </div>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fa fa-paper-plane me-2"></i> 提交评论
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<style>
-    /* 外层垂直排列 */
-.comment-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
+    <style>
+        .comment-input {
+            margin-bottom: 20px; /* 调整输入框与按钮的垂直间距 */
+        }
 
-/* 头像与用户名横向排列 */
-.user-info-block {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.comment-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-/* 内容区块样式 */
-.comment-content-block {
-    margin-top: 8px;
-    padding-left: 50px; /* 与头像对齐 */
-}
-</style>
+        .comment-button {
+            margin-left: 10px; /* 调整按钮与输入框的水平间距 */
+        }
+    </style>
 {% endblock %}
