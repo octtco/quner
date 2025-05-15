@@ -74,3 +74,17 @@ class UserRating(models.Model):
 
     class Meta:
         unique_together = ('user', 'TravelSpot')  # 添加联合唯一约束
+
+
+class UserActivityLog(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='用户行为',
+        related_name='logs'
+    )
+    session_key = models.CharField(max_length=40)  # Django会话的session_key
+    login_time = models.DateTimeField(auto_now_add=True)
+    logout_time = models.DateTimeField(null=True, blank=True)  # 登出时间为空表示未登出
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField(max_length=255, null=True, blank=True)

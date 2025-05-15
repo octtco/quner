@@ -46,16 +46,19 @@
                 {% for comment in newcomments|slice:":5" %}
                     <div class="card mb-2 border-0">
                         <div class="card-body py-3">
-                            <div class="comment-layout">
-                                <!-- Avatar -->
-                                <img src="/media/{{ comment.user.avatar|default:'/static/img/default-avatar.svg' }}"
-                                     alt="用户头像" class="comment-avatar">
-                                <!-- Username -->
-                                <h6 class="mb-0">{{ comment.user.username }}</h6>
-                                <!-- User Info + Content Block -->
-                                <div class="comment-content-block">
+                            <div class="comment-layout d-flex flex-column">
+                                <!-- User Info Row (Avatar + Username) -->
+                                <div class="d-flex align-items-center mb-2 "style="flex-wrap: nowrap">
+                                    <!-- Avatar -->
+                                    <img src="/media/{{ comment.user.avatar|default:'/static/img/default-avatar.svg' }}"
+                                         alt="用户头像" class="comment-avatar me-2">
+                                    <!-- Username -->
+                                    <span class="mb-0">{{ comment.user.username }}</span>
+                                </div>
+                                <!-- Content Block -->
+                                <div class="comment-content-block align-items-center">
                                     <!-- Content -->
-                                    <p class="comment-text">{{ comment.content }}</p>
+                                    <p class="comment-text mb-0 ">{{ comment.content }}</p>
                                 </div>
                             </div>
                         </div>
@@ -138,6 +141,12 @@
 
         .comment-button {
             margin-left: 10px; /* 调整按钮与输入框的水平间距 */
+        }
+        .comment-avatar {
+            width: 32px; /* 设置头像宽度 */
+            height: 32px; /* 设置头像高度 */
+            border-radius: 50%; /* 保持圆形 */
+            margin-right: 10px; /* 调整头像与用户名的间距 */
         }
     </style>
 {% endblock %}

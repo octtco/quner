@@ -34,8 +34,12 @@
 
                     <!-- 用户名 -->
                     <div class="mb-3 row">
-                    <input type="text" name="username" placeholder="{{ user.username }}"
-                               class="form-control form-control-lg">
+                    <label class="col-sm-2 col-form-label">用户名</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-plaintext">{{ user.username }}</p>
+                        <!-- 隐藏字段用于表单提交 -->
+                        <input type="hidden" name="username" value="{{ user.username }}">
+                    </div>
                     </div>
 
                     <!-- 头像 -->
@@ -51,6 +55,7 @@
 
                     <!-- 简介 -->
                     <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">个人简介</label>
                         <input type="text" name="shortinfo" placeholder="{{ user.textarea }}"
                                class="form-control form-control-lg">
                     </div>

@@ -38,7 +38,20 @@
                             <a href="{% url 'priceAnalysis' %}"><i class="fa fa-star"></i> 价格销量分析</a>
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-comment"></i> 评论分析</a>
+                            <a href="{% url 'userActivityAnalysis' %}"><i class="fa fa-comment"></i> 用户行为分析</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#cloudSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fa fa-chart-bar"></i> 词云图
+                    </a>
+                    <ul class="collapse list-unstyled" id="cloudSubmenu">
+                        <li>
+                            <a href="{%url 'commentContentCloud' %}"><i class="fa fa-map-marker"></i> 评论内容词云图 </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'detailIntroCloud' %}"><i class="fa fa-star"></i> 详情简介词云图</a>
                         </li>
                     </ul>
                 </li>
@@ -85,7 +98,7 @@
                                     <li><a href="{%url 'personaldetails' %}"><i class="fa fa-user-circle"></i> 个人资料</a></li>
                                     <li><a href="#"><i class="fa fa-cog"></i> 设置</a></li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="{% url 'login' %}"><i class="fa fa-sign-out"></i> 退出</a></li>
+                                    <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> 退出</a></li>
                                 </ul>
                             </li>
                         </ul>

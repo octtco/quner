@@ -7,10 +7,14 @@ from django.contrib import messages
 # 引入 login_required 装饰器
 from django.contrib.auth.decorators import login_required
 
-from app.models import User, TravelInfo, Comments
+from app.models import User, TravelInfo, UserActivityLog
 from django.db.models import Count, F, Q, Avg
-from app.utils import getPublicData, getHomeData, getCommentsData, addComments, getUserData, modifyUserData, getAnalysisData,getRecommendationData, getPriceData, getSalesData
-from app.recommdation import getUser_ratings,user_bases_collaborative_filtering
+from app.utils import getPublicData, getHomeData, getCommentsData, addComments, getUserData, modifyUserData, \
+    getAnalysisData, getRecommendationData
+from app.recommdation import *
+from django.contrib.auth.signals import user_logged_in, user_logged_out
+import datetime
+from django.utils import timezone
 
 
 # Create your views here.
@@ -21,12 +25,66 @@ def login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         try:
-            user=User.objects.get(username=username, password=password)
+            # 明文验证（仅用于演示）
+            user = User.objects.get(username=username, password=password)
+
+            # 生成唯一会话ID（替代Django的session_key）
+            custom_session_id = f"{timezone.now().timestamp()}-{user.id}"
+
+            # 记录登录日志
+            UserActivityLog.objects.create(
+                user=user,
+                session_key=custom_session_id,
+                login_time=timezone.now(),
+                ip_address=request.META.get('REMOTE_ADDR'),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
+            # # 手动触发登录信号
+            # user_logged_in.send(
+            #     sender=User,
+            #     request=request,
+            #     user=user
+            # )
+
+            # 保存自定义会话信息
             request.session['username'] = username
             request.session['avatar'] = user.avatar.path
+            request.session['custom_session_id'] = custom_session_id  # 关键配对标识
             return redirect('/app/dashboard')
         except:
             return render(request, 'base_login.html', {'error_message': '用户名或密码错误'})
+
+
+def logout(request):
+    # 获取当前会话信息
+    session_id = request.session.get('custom_session_id')
+    username = request.session.get('username')
+    print("logout1")
+
+    if username and session_id:
+        try:
+            print("logout")
+            user = User.objects.get(username=username)
+            # 更新登出时间
+            log = UserActivityLog.objects.get(
+                user=user,
+                session_key=session_id,
+                logout_time__isnull=True
+            )
+            log.logout_time = timezone.now()
+            log.save()
+            # # 手动触发登出信号
+            # user_logged_out.send(
+            #     sender=User,
+            #     request=request,
+            #     user=user
+            # )
+        except User.DoesNotExist:
+            pass
+
+    # 清除会话
+    request.session.flush()
+    return redirect('/app/login')  # 无论是否POST都跳转
 
 
 def register(request):
@@ -98,9 +156,9 @@ def addcomments(request, id):
     travelInfo = getCommentsData.getSpotById(id)
     print(travelInfo.title)
     newcomments_list = getCommentsData.getNewCommentByName(travelInfo.title)
-    
+    print(newcomments_list)
     # Pagination
-    paginator = Paginator(newcomments_list, 5) # Show 5 comments per page.
+    paginator = Paginator(newcomments_list, 5)  # Show 5 comments per page.
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -113,12 +171,14 @@ def addcomments(request, id):
         })
         return redirect(f'/app/addcomments/{id}')
 
-    return render(request,'app/addcomments.html', {
+    return render(request, 'app/addcomments.html', {
         'userInfo': userInfo,
         'travelInfo': travelInfo,
         'id': id,
+        'newcomments': newcomments_list,
         'page_obj': page_obj  # Pass paginated comments to template
     })
+
 
 # 城市与景点等级分析视图
 def cityLevelAnalysis(request):
@@ -131,7 +191,7 @@ def cityLevelAnalysis(request):
         print(cityList)
 
     for level in levelData:
-        levelList.append({"name": level["level"],  "avg_score": level["avg_score"]})
+        levelList.append({"name": level["level"], "avg_score": level["avg_score"]})
         print(levelList)
 
     context = {
@@ -160,6 +220,7 @@ def personal_details(request):
         'user': userInfo,
     })
 
+
 # 价格分布分析视图
 def priceAnalysis(request):
     username = request.session.get('username')
@@ -169,6 +230,13 @@ def priceAnalysis(request):
     xData, yData = getAnalysisData.getPriceAnalysisDataOne(travelList)
     x1Data, y1Data = getAnalysisData.getPriceAnalysisDataTwo(travelList)
     disCountPieData = getAnalysisData.getPriceAnalysisDataThree(travelList)
+    print(userInfo)
+    print(cityList)
+    print(xData)
+    print(yData)
+    print(x1Data)
+    print(y1Data)
+    print(disCountPieData)
     return render(request, 'app/priceAnalysis.html', {
         'userInfo': userInfo,
         'cityList': cityList,
@@ -181,27 +249,66 @@ def priceAnalysis(request):
         }
     })
 
-# 销量分析视图
+
+def userActivityAnalysis(request):
+    username = request.session.get('username')
+    userInfo = User.objects.get(username=username)
+    date, hour, times, results = getAnalysisData.getUserActivityLogs(userInfo)
+    print(date)
+    print(hour)
+    print(times)
+    print(results)
+    return render(request, 'app/userActivityAnalysis.html', {
+        'date': date,
+        'hour': hour,
+        'times': times,
+        'results': results
+    })
+
 
 # 推荐视图
 def recommendation(request):
     username = request.session.get('username')
     userInfo = User.objects.get(username=username)
     try:
+
+        # 1.加载数据
+        # 系统数据
         user_ratings = getUser_ratings()
-        # print(user_ratings)
-        recommended_items = user_bases_collaborative_filtering(userInfo.id, user_ratings)
-        # print(userInfo.id)
-        # print(recommended_items)
-        resultDataList = getRecommendationData.getAllTravelByTitle(recommended_items)
-        # print("recommendation1")
-        # print(resultDataList)
+        # 网络数据
+        olduser_ratings = getOldUser_ratings()
+
+        # 2.构建混合用户画像
+        hybrid_ratings = build_hybrid_user_ratings(user_ratings, olduser_ratings, w1=0.7, w2=0.3)
+
+        # 3.计算用户相似度
+        user_sim = compute_user_similarity(hybrid_ratings)
+
+        # 4.生成推荐
+        recommendations = hybrid_user_recommendation(
+            target_user=userInfo.id,
+            hybrid_ratings=hybrid_ratings,
+            user_sim=user_sim,
+            top_n=6
+        )
+        resultDataList = getRecommendationData.getAllTravelByTitle(recommendations)
     except:
         resultDataList = getRecommendationData.getRandomTravel()
-        # print("recommendation2")
-        # print(resultDataList)
 
     return render(request, 'app/recommendation.html', {
         'userInfo': userInfo,
         'resultDataList': resultDataList
+    })
+def detailIntroCloud(request):
+    username = request.session.get('username')
+    userInfo = User.objects.get(username=username)
+    return render(request, 'app/detailIntroCloud.html', {
+        'userInfo': userInfo,
+    })
+
+def commentContentCloud(request):
+    username = request.session.get('username')
+    userInfo = User.objects.get(username=username)
+    return render(request, 'app/commentContentCloud.html', {
+        'userInfo': userInfo,
     })

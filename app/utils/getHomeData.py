@@ -38,16 +38,3 @@ def getGeoData():
         })
     return resutData
 
-
-
-
-
-
-
-
-
-
-
-
-
-
